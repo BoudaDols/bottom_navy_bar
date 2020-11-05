@@ -2,7 +2,11 @@ library bottom_navy_bar;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:badges/badges.dart';
+import 'package:Pyeple/utils/uidata.dart';
 
+/// A beautiful and animated bottom navigation.
+/// The navigation bar use your current theme, but you are free to customize it.
 class BottomNavyBar extends StatelessWidget {
   final int selectedIndex;
   final double iconSize;
@@ -67,6 +71,7 @@ class BottomNavyBar extends StatelessWidget {
                 child: _ItemWidget(
                   item: item,
                   iconSize: iconSize,
+                  badgeNumber: item.badgeNumber,
                   isSelected: index == selectedIndex,
                   backgroundColor: bgColor,
                   itemCornerRadius: itemCornerRadius,
@@ -90,6 +95,7 @@ class _ItemWidget extends StatelessWidget {
   final double itemCornerRadius;
   final Duration animationDuration;
   final Curve curve;
+  final int badgeNumber;
 
   const _ItemWidget({
     Key key,
@@ -99,6 +105,7 @@ class _ItemWidget extends StatelessWidget {
     @required this.animationDuration,
     @required this.itemCornerRadius,
     @required this.iconSize,
+    @required this.badgeNumber,
     this.curve = Curves.linear,
   })  : assert(isSelected != null),
         assert(item != null),
@@ -108,6 +115,7 @@ class _ItemWidget extends StatelessWidget {
         assert(iconSize != null),
         assert(curve != null),
         super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +152,15 @@ class _ItemWidget extends StatelessWidget {
                             ? item.activeColor
                             : item.inactiveColor,
                   ),
-                  child: item.icon,
+                  child: Badge(
+                    badgeContent: Text(badgeNumber.toString(), style: TextStyle(color: Colors.white)),
+                    showBadge: isSelected ? false : (badgeNumber<=0 ? false : true),
+                    child: item.icon,
+                    shape: BadgeShape.circle,
+                    badgeColor: item.activeColor,
+                    position: BadgePosition.topEnd(),
+                    animationType: BadgeAnimationType.scale,
+                  ),
                 ),
                 if (isSelected)
                   Expanded(
@@ -170,16 +186,21 @@ class _ItemWidget extends StatelessWidget {
   }
 }
 
+/// The BottomNavyBar's item. Used to configure each item of the navigation bar.
+/// [icon] required. The widget on the left of this item.
+/// [title] required. The widget on the right of this item.
 class BottomNavyBarItem {
   final Widget icon;
   final Widget title;
   final Color activeColor;
   final Color inactiveColor;
   final TextAlign textAlign;
+  int badgeNumber;
 
   BottomNavyBarItem({
     @required this.icon,
     @required this.title,
+    @required this.badgeNumber,
     this.activeColor = Colors.blue,
     this.textAlign,
     this.inactiveColor,
